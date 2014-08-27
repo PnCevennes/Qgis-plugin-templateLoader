@@ -1,0 +1,28 @@
+<preferences>
+    <scales>
+        <scale>100</scale>
+        <scale>250</scale>
+        <scale>500</scale>
+        <scale>1000</scale>
+        <scale>2000</scale>
+        <scale>5000</scale>
+        <scale>10000</scale>
+        <scale>25000</scale>
+        <scale>50000</scale>
+        <scale>100000</scale>
+        <scale>200000</scale>
+        <scale>300000</scale>
+        <scale>500000</scale>
+        <scale>1000000</scale>
+    </scales>
+    <templates>
+        <template id="test.qpt">Test A4 paysage</template>
+        <template id="modele_a3_paysage.qpt">A3 paysage</template>
+        <template id="modele_a3_portrait.qpt">A3 portrait</template>
+        <template id="modele_a4_paysage.qpt">A4 paysage</template>
+        <template id="modele_a4_portrait.qpt">A4 portrait</template>
+    </templates>
+    <logos>
+      <logo>logo_pnc_orange.tif</logo>
+    </logos>
+</preferences>

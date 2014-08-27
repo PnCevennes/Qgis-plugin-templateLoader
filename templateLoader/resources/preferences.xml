@@ -16,7 +16,6 @@
         <scale>1000000</scale>
     </scales>
     <templates>
-        <template id="test.qpt">Test A4 paysage</template>
         <template id="modele_a3_paysage.qpt">A3 paysage</template>
         <template id="modele_a3_portrait.qpt">A3 portrait</template>
         <template id="modele_a4_paysage.qpt">A4 paysage</template>

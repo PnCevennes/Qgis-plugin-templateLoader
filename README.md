@@ -1,0 +1,2 @@
+Qgis-plugin-templateLoader
+==========================

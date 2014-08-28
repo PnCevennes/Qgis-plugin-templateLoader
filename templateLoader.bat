@@ -1,5 +1,5 @@
 @echo off
-If not exist %UserProfile%\.qgis2\python\plugins (
+If not exist %UserProfile%\.qgis2 (
 	Echo QGIS dir doesn't exists contact an administrator 
 	Exit /b
 ) ELSE Echo QGIS dir exist

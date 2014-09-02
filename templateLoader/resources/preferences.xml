@@ -24,4 +24,5 @@
     <logos>
       <logo>logo_pnc_orange.tif</logo>
     </logos>
+    <params><hide_raster>true</hide_raster></params>
 </preferences>

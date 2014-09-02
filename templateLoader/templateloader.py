@@ -43,7 +43,7 @@ class TemplateLoader:
         # initialize locale
         locale = QSettings().value("locale/userLocale")[0:2]
         localePath = os.path.join(self.plugin_dir, 'i18n', 'templateloader_{}.qm'.format(locale))
-
+        
         if os.path.exists(localePath):
             self.translator = QTranslator()
             self.translator.load(localePath)
@@ -116,7 +116,6 @@ class TemplateLoader:
         composer.setComposition(self.composition)
         
         #Get the template 
-        
         preffilename = QDir.convertSeparators(QDir.cleanPath(QDir.cleanPath(self.plugin_dir + "/resources/templates/" + self.dlg.ui.cmbTemplate.itemData( self.dlg.ui.cmbTemplate.currentIndex()))))
         template_file = QFile(preffilename)
         template_file.open(QIODevice.ReadOnly | QIODevice.Text) 
@@ -136,7 +135,7 @@ class TemplateLoader:
         #Mise a jour du titre
         if type(self.composition.getComposerItemById('main-title')) is QgsComposerLabel :
           tmaintitle = self.dlg.ui.txtmainTitle.toPlainText()
-          self.composition.getComposerItemById('main-title').setText(tmaintitle)
+          self.composition.getComposerItemById('main-title').setText(repr(self.hideraster)) #tmaintitle)
           
         #Mise a jour du sous-titre
         if type(self.composition.getComposerItemById('sub-title')) is QgsComposerLabel :
@@ -152,8 +151,16 @@ class TemplateLoader:
     
         #Mise a jour de la legende
         if type(self.composition.getComposerItemById('main-map-legend')) is QgsComposerLegend :
-          self.composition.getComposerItemById('main-map-legend').updateLegend()
+          legend = self.composition.getComposerItemById('main-map-legend')
+          legend.updateLegend()
+          #Cache les rasters si le paramètre hide_raster est égale à true dans le fichier de param
+          if (len(self.hideraster) > 0) and (self.hideraster[0][1] == 'true') :
+            layers = QgsMapLayerRegistry.instance().mapLayers()
+            for name, layer in layers.iteritems():
+              if layer.type() == 1: 
+                legend.model().removeLayer(name) 
 
+              
         #Mise a jour de l'etendu de l'échelle
         if type(self.composition.getComposerItemById('main-map')) is QgsComposerMap :
           self.composition.getComposerItemById('main-map').setNewScale(float(self.dlg.ui.cmbScale.itemData( self.dlg.ui.cmbScale.currentIndex())))
@@ -178,6 +185,10 @@ class TemplateLoader:
     #  @param
     #  @return
     def initFormGui(self):
+      
+      #Global vars
+      self.hideraster = self.preferences("hide_raster",  False)
+
       ## Fill the combobox with available scales.
       scales = self.preferences("scale",  False)
       for scale in scales:

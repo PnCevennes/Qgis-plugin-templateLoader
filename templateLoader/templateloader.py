@@ -135,7 +135,7 @@ class TemplateLoader:
         #Mise a jour du titre
         if type(self.composition.getComposerItemById('main-title')) is QgsComposerLabel :
           tmaintitle = self.dlg.ui.txtmainTitle.toPlainText()
-          self.composition.getComposerItemById('main-title').setText(repr(self.hideraster)) #tmaintitle)
+          self.composition.getComposerItemById('main-title').setText(tmaintitle)
           
         #Mise a jour du sous-titre
         if type(self.composition.getComposerItemById('sub-title')) is QgsComposerLabel :

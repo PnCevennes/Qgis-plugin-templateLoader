@@ -1,7 +1,10 @@
-Qgis-plugin-templateLoader
+![alt text](https://raw.githubusercontent.com/PnCevennes/Qgis-plugin-templateLoader/master/templateLoader/icon.png "Logo") Qgis-plugin-templateLoader
 ======================
 
-Plugin python permettant de générer un composer de carte à partir de templates prédéfinis.
+Extension python permettant de générer un composer de carte à partir de templates prédéfinies.
+
+
+![alt text](https://raw.githubusercontent.com/PnCevennes/Qgis-plugin-templateLoader/master/docs/images/main_windows_dialog.png "Fenetre principal du plugin")
 
 
 Configuration

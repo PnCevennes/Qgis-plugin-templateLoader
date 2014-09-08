@@ -83,8 +83,7 @@ class TemplateLoader:
       self.dlg.ui.cmbScale.insertItem(0, "1 : "+str(int(self.iface.mapCanvas().scale())),str(int(self.iface.mapCanvas().scale())))
       self.dlg.ui.cmbScale.setCurrentIndex(0)
       ## Prefill the source textbox
-      self.dlg.ui.txtSource.setPlainText(u"Édition : " + QFileInfo(QgsProject.instance().fileName()).fileName()+ u"\n\u00A9 PnC - " + time.strftime("%d/%m/%Y"))
-      
+      self.dlg.ui.txtSource.setPlainText(u"Édition : " + self.edition + " " + QFileInfo(QgsProject.instance().fileName()).fileName() + " " + time.strftime("%d/%m/%Y"))
       self.dlg.show()
       # Run the dialog event loop
       result = self.dlg.exec_()
@@ -162,18 +161,20 @@ class TemplateLoader:
 
               
         #Mise a jour de l'etendu de l'échelle
-        if type(self.composition.getComposerItemById('main-map')) is QgsComposerMap :
+        if type(self.composition.getComposerItemById('main-map')) is QgsComposerMap :  
           self.composition.getComposerItemById('main-map').setNewScale(float(self.dlg.ui.cmbScale.itemData( self.dlg.ui.cmbScale.currentIndex())))
-        
+          
         #Mise a jour de la source de la données
         if type(self.composition.getComposerItemById('sources-copyright')) is QgsComposerLabel :
-          tsource = "Sources : PNC"
-          if (self.dlg.ui.chbIgnScan.checkState()==Qt.Checked):
-            tsource = tsource + u", \u00A9 IGN SCAN25 2012 "
-          if (self.dlg.ui.chbIgnOrtho.checkState()==Qt.Checked):
-            tsource = tsource + u", \u00A9 IGN BD ORTHO 2012"
+          model = self.dlg.ui.listViewCopyright.model()
+          lcopyright = list()
+          for row in range(model.rowCount()):
+            item = model.item(row)
+            if item.checkState() == Qt.Checked:
+              lcopyright.append(item.text())
+          tsource = "Sources : " + ",".join(lcopyright) 
           tsource = tsource + u"\n"+ self.dlg.ui.txtSource.toPlainText()
-          self.composition.getComposerItemById('sources-copyright').setText(tsource)
+          self.composition.getComposerItemById('sources-copyright').setText(tsource )
           
       except:
         print "Unexpected error:"
@@ -185,9 +186,24 @@ class TemplateLoader:
     #  @param
     #  @return
     def initFormGui(self):
+      # Creation de la liste des valeurs pour le copyright
+      model = QStandardItemModel(self.dlg.ui.listViewCopyright)
+      copyrights = self.preferences("copyright",  False)
+      for cpr in copyrights:
+          # create an item with a caption
+          item = QStandardItem(cpr[1])
+          # add a checkbox to it
+          item.setCheckable(True)       
+          # Add the item to the model
+          model.appendRow(item)
+      self.dlg.ui.listViewCopyright.setModel(model)
       
       #Global vars
       self.hideraster = self.preferences("hide_raster",  False)
+      e = self.preferences("edition",  False)
+      self.edition = ' '
+      for ed in e:
+        self.edition = ed[1]
 
       ## Fill the combobox with available scales.
       scales = self.preferences("scale",  False)

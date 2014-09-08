@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>476</width>
+    <width>464</width>
     <height>446</height>
    </rect>
   </property>
@@ -20,7 +20,7 @@
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>110</x>
+     <x>100</x>
      <y>400</y>
      <width>341</width>
      <height>32</height>
@@ -63,7 +63,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>260</y>
+     <y>300</y>
      <width>71</width>
      <height>17</height>
     </rect>
@@ -76,7 +76,7 @@
    <property name="geometry">
     <rect>
      <x>100</x>
-     <y>260</y>
+     <y>300</y>
      <width>341</width>
      <height>91</height>
     </rect>
@@ -113,39 +113,6 @@
      <height>31</height>
     </rect>
    </property>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>21</x>
-     <y>210</y>
-     <width>268</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
-    <item>
-     <widget class="QLabel" name="copyright_label">
-      <property name="text">
-       <string>Copyright</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QCheckBox" name="chbIgnScan">
-      <property name="text">
-       <string>Scan IGN</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QCheckBox" name="chbIgnOrtho">
-      <property name="text">
-       <string>Ortho IGN</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
   </widget>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
@@ -205,7 +172,32 @@
     </rect>
    </property>
   </widget>
-  <zorder>layoutWidget</zorder>
+  <widget class="QListView" name="listViewCopyright">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>210</y>
+     <width>341</width>
+     <height>83</height>
+    </rect>
+   </property>
+   <property name="resizeMode">
+    <enum>QListView::Adjust</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="copyright_label">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>240</y>
+     <width>71</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Copyright</string>
+   </property>
+  </widget>
   <zorder>layoutWidget</zorder>
   <zorder>layoutWidget</zorder>
   <zorder>layoutWidget</zorder>
@@ -216,6 +208,8 @@
   <zorder>txtSource</zorder>
   <zorder>txtsubTitle</zorder>
   <zorder>txtmainTitle</zorder>
+  <zorder>listViewCopyright</zorder>
+  <zorder>copyright_label</zorder>
  </widget>
  <tabstops>
   <tabstop>cmbTemplate</tabstop>
@@ -223,8 +217,6 @@
   <tabstop>txtmainTitle</tabstop>
   <tabstop>txtsubTitle</tabstop>
   <tabstop>iNumCarte</tabstop>
-  <tabstop>chbIgnScan</tabstop>
-  <tabstop>chbIgnOrtho</tabstop>
   <tabstop>txtSource</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>

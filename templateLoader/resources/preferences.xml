@@ -21,6 +21,14 @@
         <template id="modele_a4_paysage.qpt">A4 paysage</template>
         <template id="modele_a4_portrait.qpt">A4 portrait</template>
     </templates>
+    <copyrights>
+        <copyright>© IGN SCAN25 2012</copyright>
+        <copyright>© IGN BD ORTHO 2012</copyright>
+        <copyright>PnC</copyright>
+    </copyrights> 
+    <editions>
+      <edition>©PnC</edition>    
+    </editions>
     <logos>
       <logo>logo_pnc_orange.tif</logo>
     </logos>

@@ -59,17 +59,17 @@ class TemplateLoader:
         # Create action that will start plugin configuration
         self.action = QAction(
             QIcon(":/plugins/templateloader/icon.png"),
-            u"Create map", self.iface.mainWindow())
+           QCoreApplication.translate('TemplateLoader', u"Créer carte"), self.iface.mainWindow())
         # connect the action to the run method
         self.action.triggered.connect(self.run)
 
         # Add toolbar button and menu item
         self.iface.addToolBarIcon(self.action)
-        self.iface.addPluginToMenu(u"&PnxTemplateLoader", self.action)
+        self.iface.addPluginToMenu(u"&TemplateLoader", self.action)
 
     def unload(self):
         # Remove the plugin menu item and icon
-        self.iface.removePluginMenu(u"&PnxTemplateLoader", self.action)
+        self.iface.removePluginMenu(u"&TemplateLoader", self.action)
         self.iface.removeToolBarIcon(self.action)
 
     #  

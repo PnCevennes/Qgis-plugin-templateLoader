@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_templateloader.ui'
 #
-# Created: Mon Sep  8 14:36:53 2014
+# Created: Mon Sep  8 18:08:26 2014
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -21,6 +21,7 @@ class Ui_TemplateLoader(object):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/templateloader/icon.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         TemplateLoader.setWindowIcon(icon)
+        TemplateLoader.setLocale(QtCore.QLocale(QtCore.QLocale.French, QtCore.QLocale.France))
         self.buttonBox = QtGui.QDialogButtonBox(TemplateLoader)
         self.buttonBox.setGeometry(QtCore.QRect(100, 400, 341, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)

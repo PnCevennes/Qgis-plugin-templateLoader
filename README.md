@@ -66,3 +66,12 @@ Ils permettent de spécifier :
 Création de template
 -------------------
 
+Pour que le plugin fonctionne correctement les templates doivent respecter des conventions. Les éléments du template doivent avoir les ids suivants : 
+ - Carte = main-map
+ - Légende = main-map-legend
+ - Logo = img-logo
+ - Titre = main-title
+ - Sous-titre = sub-title
+ - Source = sources-copyright
+ - Numéro de la carte = num-map
+

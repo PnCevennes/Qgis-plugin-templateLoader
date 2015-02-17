@@ -101,16 +101,17 @@ class TemplateLoader:
     #  @return          
     def openMapComposer(self):
       try:
-        # Create the composition
-        canvas = self.iface.mapCanvas() 
-        renderer = canvas.mapRenderer() 
-        self.composition = QgsComposition(renderer)
 
         #Nettoyage des composeurs de façon a évité la multiplication
         for projectComposer in self.iface.activeComposers():
           if projectComposer.composerWindow().windowTitle() == 'Easy map' :
             self.iface.deleteComposer(projectComposer)
         
+        # Create the composition
+        canvas = self.iface.mapCanvas() 
+        renderer = canvas.mapRenderer() 
+        self.composition = QgsComposition(renderer)
+		
         composer = self.iface.createNewComposer('Easy map') 
         composer.setComposition(self.composition)
         
@@ -151,6 +152,7 @@ class TemplateLoader:
         #Mise a jour de la legende
         if type(self.composition.getComposerItemById('main-map-legend')) is QgsComposerLegend :
           legend = self.composition.getComposerItemById('main-map-legend')
+          legend.setAutoUpdateModel(True)
           legend.updateLegend()
           #Cache les rasters si le paramètre hide_raster est égale à true dans le fichier de param
           if (len(self.hideraster) > 0) and (self.hideraster[0][1] == 'true') :
@@ -158,7 +160,7 @@ class TemplateLoader:
             for name, layer in layers.iteritems():
               if layer.type() == 1: 
                 legend.model().removeLayer(name) 
-
+          
               
         #Mise a jour de l'etendu de l'échelle
         if type(self.composition.getComposerItemById('main-map')) is QgsComposerMap :  

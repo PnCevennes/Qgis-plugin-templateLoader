@@ -153,14 +153,10 @@ class TemplateLoader:
         if type(self.composition.getComposerItemById('main-map-legend')) is QgsComposerLegend :
           legend = self.composition.getComposerItemById('main-map-legend')
           legend.setAutoUpdateModel(True)
-          legend.updateLegend()
-          #Cache les rasters si le paramètre hide_raster est égale à true dans le fichier de param
-          if (len(self.hideraster) > 0) and (self.hideraster[0][1] == 'true') :
-            layers = QgsMapLayerRegistry.instance().mapLayers()
-            for name, layer in layers.iteritems():
-              if layer.type() == 1: 
-                legend.model().removeLayer(name) 
+          legend.setLegendFilterByMapEnabled(True)
+          legend.setAutoUpdateModel(False)
           
+          #~ TODO : ne pas afficher les données de type raster
               
         #Mise a jour de l'etendu de l'échelle
         if type(self.composition.getComposerItemById('main-map')) is QgsComposerMap :  

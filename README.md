@@ -6,6 +6,9 @@ Extension python permettant de générer un composer de carte à partir de templ
 
 ![alt text](https://raw.githubusercontent.com/PnCevennes/Qgis-plugin-templateLoader/master/docs/images/main_windows_dialog.png "Fenetre principal du plugin")
 
+Versions Qgis
+-------------------
+Plugin testé avec Qgis 2.6, 2.8, 2.14
 
 Configuration
 -------------------

@@ -43,7 +43,7 @@ class TemplateLoader:
         # initialize locale
         locale = QSettings().value("locale/userLocale")[0:2]
         localePath = os.path.join(self.plugin_dir, 'i18n', 'templateloader_{}.qm'.format(locale))
-        
+
         if os.path.exists(localePath):
             self.translator = QTranslator()
             self.translator.load(localePath)
@@ -72,7 +72,7 @@ class TemplateLoader:
         self.iface.removePluginMenu(u"&TemplateLoader", self.action)
         self.iface.removeToolBarIcon(self.action)
 
-    #  
+    #
     #  name: run
     #  run method that performs all the real work
     #  @param
@@ -93,12 +93,12 @@ class TemplateLoader:
           # do something useful (delete the line containing pass and
           # substitute with your code)
           pass
-    
-    #  
+
+    #
     #  name: openMapComposer
     #  Fonction principal qui permet de lancer le map composer et de préremplir les templates avec les données du formulaire
     #  @param
-    #  @return          
+    #  @return
     def openMapComposer(self):
       try:
 
@@ -106,69 +106,64 @@ class TemplateLoader:
         for projectComposer in self.iface.activeComposers():
           if projectComposer.composerWindow().windowTitle() == 'Easy map' :
             self.iface.deleteComposer(projectComposer)
-        
-        # Create the composition
-        canvas = self.iface.mapCanvas() 
-        renderer = canvas.mapRenderer() 
-        self.composition = QgsComposition(renderer)
-		
-        composer = self.iface.createNewComposer('Easy map') 
-        composer.setComposition(self.composition)
-        
-        #Get the template 
-        preffilename = QDir.convertSeparators(QDir.cleanPath(QDir.cleanPath(self.plugin_dir + "/resources/templates/" + self.dlg.ui.cmbTemplate.itemData( self.dlg.ui.cmbTemplate.currentIndex()))))
-        template_file = QFile(preffilename)
-        template_file.open(QIODevice.ReadOnly | QIODevice.Text) 
-        template_content = template_file.readAll() 
-        template_file.close()
 
-        document = QtXml.QDomDocument() 
-        document.setContent(template_content) 
-        status_load = self.composition.loadFromTemplate(document)
-        
+        composerView = self.iface.createNewComposer('Easy map')
+
+        #Get the template
+        preffilename = QDir.convertSeparators(QDir.cleanPath(QDir.cleanPath(self.plugin_dir + \
+            "/resources/templates/" + \
+            self.dlg.ui.cmbTemplate.itemData( self.dlg.ui.cmbTemplate.currentIndex())))
+        )
+        document = QtXml.QDomDocument()
+        with open(preffilename, 'r') as templateFile:
+            myTemplateContent = templateFile.read()
+            document.setContent(myTemplateContent)
+
+        composerView.composition().loadFromTemplate(document)
+        self.composition = composerView.composition()
+        mapSettings = self.composition.mapSettings()
+
         #Mise à jour du chemin de l'image
         if type(self.composition.getComposerItemById('img-logo')) is QgsComposerPicture :
           logofile = self.preferences("logo",  False)
           ilogo = self.composition.getComposerItemById('img-logo')
-          ilogo.setPictureFile(QDir.convertSeparators(QDir.cleanPath(self.plugin_dir + "/resources/logos/" + logofile[0][0])))
+          ilogo.setPicturePath(QDir.convertSeparators(QDir.cleanPath(self.plugin_dir + "/resources/logos/" + logofile[0][0])))
 
         #Mise a jour du titre
         if type(self.composition.getComposerItemById('main-title')) is QgsComposerLabel :
           tmaintitle = self.dlg.ui.txtmainTitle.toPlainText()
           self.composition.getComposerItemById('main-title').setText(tmaintitle)
-          
+
         #Mise a jour du sous-titre
         if type(self.composition.getComposerItemById('sub-title')) is QgsComposerLabel :
           tsubtitle = self.dlg.ui.txtsubTitle.toPlainText()
           self.composition.getComposerItemById('sub-title').setText(tsubtitle)
-          
+
         #Mise a jour du numéro de la carte
         if type(self.composition.getComposerItemById('num-map')) is QgsComposerLabel :
           if self.dlg.ui.iNumCarte.value() == 0 :
             self.composition.getComposerItemById('num-map').hide()
           else :
             self.composition.getComposerItemById('num-map').setText("CARTE " + str(self.dlg.ui.iNumCarte.value()))
-    
+
         #Mise a jour de la legende
         if type(self.composition.getComposerItemById('main-map-legend')) is QgsComposerLegend :
-          legend = self.composition.getComposerItemById('main-map-legend')
-          legend.setAutoUpdateModel(True)
-          legend.setLegendFilterByMapEnabled(True)
-          legend.setAutoUpdateModel(False)
-          
-          #~ TODO : ne pas afficher les données de type raster
-              
+            try:
+                legendItem = self.composition.getComposerItemById('main-map-legend')
+                self.layerGroup = QgsLayerTreeGroup()
+                ml = self.iface.legendInterface()
+                ls = [layer for layer in QgsMapLayerRegistry.instance().mapLayers().values() if layer.type() == 0 and ml.isLayerVisible(layer)]
+                for i, l in enumerate(ls):
+                    self.layerGroup.insertLayer(i, l)
+                legendItem.modelV2().setRootGroup(self.layerGroup)
+            except Exception as e:
+                print e
+
         #Mise a jour de l'etendu de l'échelle
-        if type(self.composition.getComposerItemById('main-map')) is QgsComposerMap :  
-          mapcomposer = self.composition.getComposerItemById('main-map')
-          box = mapcomposer.rectWithFrame()
-          xy = mapcomposer.pagePos()
-          mapcomposer.setNewExtent(canvas.extent())
-          mapcomposer.setNewScale(float(self.dlg.ui.cmbScale.itemData( self.dlg.ui.cmbScale.currentIndex())))
-          #Force la position et la taille de l'élément qui est modifiée lors de l'appel à la méthode setNewExtent
-          mapcomposer.setItemPosition(xy.x() ,xy.y() , box.width(), box.height())
-          mapcomposer.updateItem()
-          
+        if type(self.composition.getComposerItemById('main-map')) is QgsComposerMap :
+          mapItem = self.composition.getComposerItemById('main-map')
+          mapItem.zoomToExtent(self.iface.mapCanvas().extent())
+
         #Mise a jour de la source de la données
         if type(self.composition.getComposerItemById('sources-copyright')) is QgsComposerLabel :
           model = self.dlg.ui.listViewCopyright.model()
@@ -177,15 +172,15 @@ class TemplateLoader:
             item = model.item(row)
             if item.checkState() == Qt.Checked:
               lcopyright.append(item.text())
-          tsource = "Sources : " + ",".join(lcopyright) 
+          tsource = "Sources : " + ",".join(lcopyright)
           tsource = tsource + u"\n"+ self.dlg.ui.txtSource.toPlainText()
           self.composition.getComposerItemById('sources-copyright').setText(tsource )
-          
-      except:
-        print "Unexpected error:"
-        raise
-    
-    #  
+
+      except Exception as e:
+        print "Unexpected error:", e
+
+
+    #
     #  name: initFormGui
     #  Fonction d'initialisation de l'interface graphique => récupération des valeurs de paramètres
     #  @param
@@ -198,11 +193,11 @@ class TemplateLoader:
           # create an item with a caption
           item = QStandardItem(cpr[1])
           # add a checkbox to it
-          item.setCheckable(True)       
+          item.setCheckable(True)
           # Add the item to the model
           model.appendRow(item)
       self.dlg.ui.listViewCopyright.setModel(model)
-      
+
       #Global vars
       self.hideraster = self.preferences("hide_raster",  False)
       e = self.preferences("edition",  False)
@@ -214,11 +209,11 @@ class TemplateLoader:
       scales = self.preferences("scale",  False)
       for scale in scales:
         self.dlg.ui.cmbScale.addItem("1 : "+scale[1], scale[1] )
-      
+
       templates = self.preferences("template",  False)
       for template in templates:
-        self.dlg.ui.cmbTemplate.addItem(template[1], template[0] )      
-       
+        self.dlg.ui.cmbTemplate.addItem(template[1], template[0] )
+
     #  name: preferences
     #  Fonction de récupération des paramètres définis dans le fichier preferences.xml
     #  @param pref (text) = nom de la variable d'intéret
@@ -231,7 +226,7 @@ class TemplateLoader:
             prefxml = preffile.read()
 
             doc = QtXml.QDomDocument()
-            doc.setContent(prefxml,  True)  
+            doc.setContent(prefxml,  True)
 
             root = doc.documentElement()
             if root.tagName() != "preferences":
@@ -250,6 +245,6 @@ class TemplateLoader:
                 n = n.nextSibling()
 
         except IOError:
-            print "error opening preferences.xml"        
-        
+            print "error opening preferences.xml"
+
         return prefs

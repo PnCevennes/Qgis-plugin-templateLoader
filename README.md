@@ -1,7 +1,7 @@
 ![alt text](https://raw.githubusercontent.com/PnCevennes/Qgis-plugin-templateLoader/master/templateLoader/icon.png "Logo") Qgis-plugin-templateLoader
 ======================
 
-Extension python permettant de générer un composer de carte à partir de templates prédéfinies.
+Extension python permettant de générer un composer de carte à partir de templates prédéfinis.
 
 
 ![alt text](https://raw.githubusercontent.com/PnCevennes/Qgis-plugin-templateLoader/master/docs/images/main_windows_dialog.png "Fenetre principal du plugin")
@@ -12,7 +12,7 @@ Configuration
 
 Les paramètres du plugins sont contenus dans le fichier preferences.xml (répertoire resources).
 Ils permettent de spécifier : 
- - La listes des échelles possible pour la carte
+ - La liste des échelles possibles pour la carte
 
   ````XML
   <scales>
@@ -23,7 +23,7 @@ Ils permettent de spécifier :
     <scale>1000000</scale>
   </scales>
   ````
- - La liste des templates accéssibles à l'utilisateur.
+ - La liste des templates accessibles à l'utilisateur.
 
   ````XML
   <templates>

@@ -161,8 +161,10 @@ class TemplateLoader:
 
         #Mise a jour de l'etendu de l'échelle
         if type(self.composition.getComposerItemById('main-map')) is QgsComposerMap :
-          mapItem = self.composition.getComposerItemById('main-map')
-          mapItem.zoomToExtent(self.iface.mapCanvas().extent())
+            mapItem = self.composition.getComposerItemById('main-map')
+            mapItem.zoomToExtent(self.iface.mapCanvas().extent())
+            #Prise en compte de l'échelle selectionnée par l'utilisateur
+            mapItem.setNewScale(float(self.dlg.ui.cmbScale.itemData( self.dlg.ui.cmbScale.currentIndex())))
 
         #Mise a jour de la source de la données
         if type(self.composition.getComposerItemById('sources-copyright')) is QgsComposerLabel :

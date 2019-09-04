@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/plugins/templateloader" >
+    <qresource prefix="/plugins/templateLoader" >
         <file>icon.png</file>
     </qresource>
 </RCC>

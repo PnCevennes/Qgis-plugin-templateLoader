@@ -1,37 +1,39 @@
-# This file contains metadata for your plugin. Beginning
-# with version 1.8 this is the preferred way to supply information about a
-# plugin. The current method of embedding metadata in __init__.py will
-# be supported until version 2.0
+# This file contains metadata for your plugin. Since 
+# version 2.0 of QGIS this is the proper way to supply 
+# information about a plugin. The old method of 
+# embedding metadata in __init__.py will 
+# is no longer supported since version 2.0.
 
-# This file should be included when you package your plugin.
-
-# Mandatory items:
-
+# This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=PnxTemplateLoader
-qgisMinimumVersion=2.6
+name=template Loader
+qgisMinimumVersion=3.0
 description=Build map from template
-version=1.0
-author=PnC
+version=1.1
+author=Parc national des Cévennes
 email=amandine.sahl@cevennes-parcnational.fr
 
-# end of mandatory metadata
+about=Assistant de création de carte basé sur des templates
 
-# Optional items:
+tracker=https://github.com/PnCevennes/Qgis-plugin-templateLoader
+repository=https://github.com/PnCevennes/Qgis-plugin-templateLoader
+# End of mandatory metadata
 
-# Uncomment the following line and add your changelog entries:
+# Recommended items:
+
+# Uncomment the following line and add your changelog:
 # changelog=
 
-# tags are comma separated with spaces allowed
-tags=print,template,mapcomposer
+# Tags are comma separated with spaces allowed
+tags=map template
 
 homepage=https://github.com/PnCevennes/Qgis-plugin-templateLoader
-tracker=https://github.com/PnCevennes/Qgis-plugin-templateLoader/issues
-repository=https://github.com/PnCevennes/Qgis-plugin-templateLoader
+category=Plugins
 icon=icon.png
 # experimental flag
 experimental=False
 
-# deprecated flag (applies to the whole plugin, not just a single version
+# deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
+

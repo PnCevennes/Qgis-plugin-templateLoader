@@ -23,15 +23,23 @@
 """
 
 import os.path
+import json
 
 from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QAction
+from PyQt5.QtXml import QDomDocument
 
 from distutils.dir_util import copy_tree
 
-
-from qgis.core import QgsApplication, QgsProject
+from qgis.core import (
+    QgsApplication,
+    QgsProject,
+    QgsPrintLayout,
+    QgsReadWriteContext,
+    QgsLayoutItemMap, QgsLayoutItemLabel, QgsLayoutItemLegend, QgsLayerTree
+)
+from qgis.gui import QgsMessageBar
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -54,6 +62,7 @@ class templateLoader:
         self.iface = iface
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
+        
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
         locale_path = os.path.join(
@@ -70,13 +79,14 @@ class templateLoader:
 
         # Declare instance attributes
         self.actions = []
-        self.menu = self.tr(u'&template Loader')
+        self.menu = self.tr(u'&Créer une carte')
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
 
         self.add_profile_data()
+        self.preferences = self.load_preferences()
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -93,7 +103,6 @@ class templateLoader:
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('templateLoader', message)
 
-
     def add_profile_data(self):
         """
             Add templates and resources from plugin to user profile
@@ -104,22 +113,31 @@ class templateLoader:
 
         copy_tree(source_profile, profile_home, update=1)
 
+    def load_preferences(self):
+        path = os.path.join(self.plugin_dir, "resources", "preferences.json")
+        with open(path, 'r') as json_prefs:
+            prefs = json.load(json_prefs)
+        return prefs
 
-    def layout_loader(self, template_file_name, layout_name, title_text):
+    def layout_loader(self):
         """ Generate the layout """
-        from qgis.core import (
-            QgsProject,
-            QgsPrintLayout,
-            QgsReadWriteContext,
-            QgsLayoutItemMap, QgsLayoutItemLabel, QgsLayoutItemLegend, QgsLayerTree
-        )
-        from qgis.gui import QgsMessageBar
-        from PyQt5.QtXml import QDomDocument
-
-        template_file_name = '/home/sahl/dev/plugins_qgis/qgis3/test_template.qpt'
+        
         layout_name = 'Custom Map'
-        title_text = 'New Title'
 
+        # get ui results
+        title_text = self.dlg.txtmainTitle.toPlainText()
+        sub_title = self.dlg.txtsubTitle.toPlainText()
+        template_file_name = self.dlg.cmbTemplate.currentText()
+        num_carte = self.dlg.iNumCarte.value()
+        
+        scale = self.dlg.cmbScale.itemData(self.dlg.cmbScale.currentIndex())
+
+        model = self.dlg.listViewCopyright.model()
+        lcopyright = list()
+        for row in range(model.rowCount()):
+            item = model.item(row)
+            if item.checkState():
+                lcopyright.append(item.text())
 
         project = QgsProject.instance()
         manager = project.layoutManager()
@@ -134,43 +152,54 @@ class templateLoader:
         layout.initializeDefaults()
 
         # Load template file and load it into the layout (l)
-
-        template_file = open(template_file_name, 'r+', encoding='utf-8')
+        template_file = open(
+            os.path.join(QgsApplication.qgisSettingsDirPath(), "composer_templates", template_file_name + ".qpt"),
+            'r+',
+            encoding='utf-8'
+        )
         template_content = template_file.read()
         template_file.close()
         document = QDomDocument()
         document.setContent(template_content)
         layout.loadFromTemplate(document, QgsReadWriteContext())
 
-
-        self.iface.messageBar().pushMessage(
-            "Template load", template_file_name
-        )
         # Give the layout a name (must be unique)
         layout.setName(layout_name)
 
         ## Extent of current canvas
-        if type(layout.itemById('main-map')) is QgsLayoutItemMap:
-            canvas = self.iface.mapCanvas()
+        if isinstance(layout.itemById('main-map'), QgsLayoutItemMap):
             my_map = layout.itemById('main-map')
-
-            my_map.setExtent(canvas.extent())
-
+            # canvas = self.iface.mapCanvas()
+            # my_map.setExtent(canvas.extent())
+            
             # Scale
-            # TODO get from interface
-            # my_map.setScale(1000.0)
+            my_map.setScale(int(scale))
 
 
         ## Change title QgsLayoutItemLabel
-        if type(layout.itemById('main-title')) is QgsLayoutItemLabel:
-            my_title = layout.itemById('main-title')
-            my_title.setText("Subtitle Her COCOe")
-        else:
-            print('no title')
+        if isinstance(layout.itemById('main-title'), QgsLayoutItemLabel):
+            item = layout.itemById('main-title')
+            item.setText(title_text)
+
+        if isinstance(layout.itemById('sub-title'), QgsLayoutItemLabel):
+            item = layout.itemById('sub-title')
+            item.setText(sub_title)
+
+        if isinstance(layout.itemById('num-map'), QgsLayoutItemLabel):
+            item = layout.itemById('num-map')
+            item.setText(item.text().replace('{{num}}', str(num_carte)))
+
+        if isinstance(layout.itemById('sources-copyright'), QgsLayoutItemLabel):
+            item = layout.itemById('sources-copyright')
+            item.setText(
+                item.text().replace(
+                    '{{copyright}}', ",".join(lcopyright)
+                )
+            )
 
         ## Legend
-        if type(layout.itemById('main-legend')) is QgsLayoutItemLegend:
-            legend = layout.itemById('main-legend')
+        if isinstance(layout.itemById('main-map-legend'), QgsLayoutItemLegend):
+            legend = layout.itemById('main-map-legend')
             legend.setTitle("Légende")
             ## Add only active layers
             # Checks layer tree objects and stores them in a list. This includes csv tables
@@ -179,22 +208,19 @@ class templateLoader:
                 if layer.isVisible()
             ]
             # get map layer objects of checked layers by matching their names and store those in a list
-            layersToAdd = [
-                layer for layer in project.mapLayers().values()
-                if layer.name() in checked_layers
+            layers_to_remove = [
+                layer for layer in project.mapLayers().values() if layer.name() not in checked_layers
             ]
-            layers_to_remove = [layer for layer in project.mapLayers().values() if layer.name() not in checked_layers]
-
             legend.setAutoUpdateModel(False) #this line is important!! without it the unchecked layers
             #will be removed not only from the layout legend, but also from the table of contents panel and your project!!
-            m = legend.model()
-            g = m.rootGroup()
+            model = legend.model()
+            root = model.rootGroup()
             for l in layers_to_remove:
-                g.removeLayer(l)
+                root.removeLayer(l)
 
             try:
-                legend.model().setRootGroup(root)
-            except Exception as e:
+                model.setRootGroup(root)
+            except:
                 self.iface.messageBar().pushMessage(
                 "Error", "Ooops. Something went wrong. Trying to open the generated layout"
                 )
@@ -307,7 +333,62 @@ class templateLoader:
                 action)
             self.iface.removeToolBarIcon(action)
 
+    def loadTemplates(self):
+        profile_dir = QgsApplication.qgisSettingsDirPath()
+        templates_dir = os.path.join(profile_dir, 'composer_templates')
+        
+        # Does the composer_templates folder exist? Otherwise create it.
+        if os.path.isdir(templates_dir) == False:
+            os.mkdir(templates_dir)
+        
+        # Search the templates folder and add files to templates list and sort it
+        templates = [f.name for f in os.scandir(templates_dir) if f.is_file()]
+        templates.sort()
 
+        # Add all the templates from the list to the listWidget (only add files with *.qpt extension)
+        tpls = []
+        for template in templates:
+            filename, extension = os.path.splitext(template) 
+            if extension == '.qpt':
+                tpls.append(filename)
+        return tpls
+    
+    def initFormGui(self):
+        """
+            name: initFormGui
+            Fonction d'initialisation de l'interface graphique => récupération des valeurs de paramètres
+            @param
+            @return
+        """
+        # Creation de la liste des valeurs pour le copyright
+        model = QStandardItemModel(self.dlg.listViewCopyright)
+        copyrights = self.preferences["copyrights"]
+        for cpr in copyrights:
+            # create an item with a caption
+            item = QStandardItem(cpr)
+            # add a checkbox to it
+            item.setCheckable(True)
+            # Add the item to the model
+            model.appendRow(item)
+        self.dlg.listViewCopyright.setModel(model)
+
+        ## Fill the combobox with available scales.
+        self.dlg.cmbScale.addItem(
+            "1 : " + str(int(self.iface.mapCanvas().scale())),
+            int(self.iface.mapCanvas().scale())
+        )
+        scales = self.preferences["scales"]
+        for scale in scales:
+            self.dlg.cmbScale.addItem("1 : " + str(scale), scale)
+
+        self.dlg.cmbScale.setCurrentIndex(0)
+
+        # Load template
+        templates = self.loadTemplates()
+        self.dlg.cmbTemplate.clear()
+        for template in templates:
+            self.dlg.cmbTemplate.addItem(template)
+        
     def run(self):
         """Run method that performs all the real work"""
 
@@ -316,6 +397,7 @@ class templateLoader:
         if self.first_start == True:
             self.first_start = False
             self.dlg = templateLoaderDialog()
+            self.initFormGui()
 
         # show the dialog
         self.dlg.show()
@@ -323,6 +405,5 @@ class templateLoader:
         result = self.dlg.exec_()
         # See if OK was pressed
         if result:
-            # Do something useful here - delete the line containing pass and
-            # substitute with your code.
-            self.layout_loader( "template_file_name", "layout_name", "title_text")
+            # Run layout loader
+            self.layout_loader()

@@ -84,16 +84,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QPlainTextEdit" name="txtsubTitle">
-   <property name="geometry">
-    <rect>
-     <x>100</x>
-     <y>130</y>
-     <width>341</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
@@ -142,16 +132,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QPlainTextEdit" name="txtmainTitle">
-   <property name="geometry">
-    <rect>
-     <x>100</x>
-     <y>90</y>
-     <width>341</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QListView" name="listViewCopyright">
    <property name="geometry">
     <rect>
@@ -178,16 +158,36 @@
     <string>Copyright</string>
    </property>
   </widget>
+  <widget class="QLineEdit" name="txtmainTitle">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>90</y>
+     <width>331</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="txtsubTitle">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>130</y>
+     <width>331</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
   <zorder>layoutWidget</zorder>
   <zorder>layoutWidget</zorder>
   <zorder>layoutWidget</zorder>
   <zorder>buttonBox</zorder>
   <zorder>mainTitle_label</zorder>
   <zorder>subTitle_label</zorder>
-  <zorder>txtsubTitle</zorder>
-  <zorder>txtmainTitle</zorder>
   <zorder>listViewCopyright</zorder>
   <zorder>copyright_label</zorder>
+  <zorder>txtmainTitle</zorder>
+  <zorder>txtsubTitle</zorder>
  </widget>
  <tabstops>
   <tabstop>cmbTemplate</tabstop>
@@ -195,7 +195,7 @@
   <tabstop>txtmainTitle</tabstop>
   <tabstop>txtsubTitle</tabstop>
   <tabstop>iNumCarte</tabstop>
-  <tabstop>buttonBox</tabstop>
+  <tabstop>listViewCopyright</tabstop>
  </tabstops>
  <resources/>
  <connections>

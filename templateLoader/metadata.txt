@@ -16,7 +16,7 @@ email=amandine.sahl@cevennes-parcnational.fr
 
 about=Assistant de création de carte basé sur des templates
 
-tracker=https://github.com/PnCevennes/Qgis-plugin-templateLoader
+tracker=https://github.com/PnCevennes/Qgis-plugin-templateLoader/issues
 repository=https://github.com/PnCevennes/Qgis-plugin-templateLoader
 # End of mandatory metadata
 

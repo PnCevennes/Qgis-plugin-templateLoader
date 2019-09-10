@@ -62,7 +62,7 @@ class templateLoader:
         self.iface = iface
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
-        
+
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
         locale_path = os.path.join(
@@ -121,7 +121,7 @@ class templateLoader:
 
     def layout_loader(self):
         """ Generate the layout """
-        
+
         layout_name = 'Custom Map'
 
         # get ui results
@@ -129,7 +129,7 @@ class templateLoader:
         sub_title = self.dlg.txtsubTitle.toPlainText()
         template_file_name = self.dlg.cmbTemplate.currentText()
         num_carte = self.dlg.iNumCarte.value()
-        
+
         scale = self.dlg.cmbScale.itemData(self.dlg.cmbScale.currentIndex())
 
         model = self.dlg.listViewCopyright.model()
@@ -171,7 +171,7 @@ class templateLoader:
             my_map = layout.itemById('main-map')
             # canvas = self.iface.mapCanvas()
             # my_map.setExtent(canvas.extent())
-            
+
             # Scale
             my_map.setScale(int(scale))
 
@@ -335,16 +335,16 @@ class templateLoader:
 
     def loadTemplates(self):
         """
-            Load template file that are contains in 
+            Load template file that are contains in
             the composer_templates dir
         """
         profile_dir = QgsApplication.qgisSettingsDirPath()
         templates_dir = os.path.join(profile_dir, 'composer_templates')
-        
+
         # Does the composer_templates folder exist? Otherwise create it.
         if os.path.isdir(templates_dir) == False:
             os.mkdir(templates_dir)
-        
+
         # Search the templates folder and add files to templates list and sort it
         templates = [f.name for f in os.scandir(templates_dir) if f.is_file()]
         templates.sort()
@@ -352,15 +352,15 @@ class templateLoader:
         # Add all the templates from the list to the listWidget (only add files with *.qpt extension)
         tpls = []
         for template in templates:
-            filename, extension = os.path.splitext(template) 
+            filename, extension = os.path.splitext(template)
             if extension == '.qpt':
                 tpls.append(filename)
         return tpls
-    
+
     def initFormGui(self):
         """
             name: initFormGui
-            Fonction d'initialisation de l'interface graphique 
+            Fonction d'initialisation de l'interface graphique
                 => récupération des valeurs de paramètres
             @param
             @return
@@ -393,7 +393,7 @@ class templateLoader:
         self.dlg.cmbTemplate.clear()
         for template in templates:
             self.dlg.cmbTemplate.addItem(template)
-        
+
     def run(self):
         """Run method that performs all the real work"""
 

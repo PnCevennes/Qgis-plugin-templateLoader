@@ -334,6 +334,10 @@ class templateLoader:
             self.iface.removeToolBarIcon(action)
 
     def loadTemplates(self):
+        """
+            Load template file that are contains in 
+            the composer_templates dir
+        """
         profile_dir = QgsApplication.qgisSettingsDirPath()
         templates_dir = os.path.join(profile_dir, 'composer_templates')
         
@@ -356,7 +360,8 @@ class templateLoader:
     def initFormGui(self):
         """
             name: initFormGui
-            Fonction d'initialisation de l'interface graphique => récupération des valeurs de paramètres
+            Fonction d'initialisation de l'interface graphique 
+                => récupération des valeurs de paramètres
             @param
             @return
         """
@@ -394,10 +399,19 @@ class templateLoader:
 
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
-        if self.first_start == True:
+        if self.first_start is True:
             self.first_start = False
             self.dlg = templateLoaderDialog()
             self.initFormGui()
+
+        ## Fill the combobox with the current scale
+        self.dlg.cmbScale.removeItem(0)
+        self.dlg.cmbScale.insertItem(
+            0,
+            "1 : " + str(int(self.iface.mapCanvas().scale())),
+            int(self.iface.mapCanvas().scale())
+        )
+        self.dlg.cmbScale.setCurrentIndex(0)
 
         # show the dialog
         self.dlg.show()

@@ -65,6 +65,7 @@ class templateLoader:
 
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
+
         locale_path = os.path.join(
             self.plugin_dir,
             'i18n',
@@ -73,13 +74,12 @@ class templateLoader:
         if os.path.exists(locale_path):
             self.translator = QTranslator()
             self.translator.load(locale_path)
-
             if qVersion() > '4.3.3':
                 QCoreApplication.installTranslator(self.translator)
 
         # Declare instance attributes
         self.actions = []
-        self.menu = self.tr(u'&Créer une carte')
+        self.menu = self.tr("Créer une carte")
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
@@ -101,7 +101,7 @@ class templateLoader:
         :rtype: QString
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
-        return QCoreApplication.translate('templateLoader', message)
+        return QCoreApplication.translate('TemplateLoader', message)
 
     def add_profile_data(self):
         """
@@ -125,8 +125,8 @@ class templateLoader:
         layout_name = 'Custom Map'
 
         # get ui results
-        title_text = self.dlg.txtmainTitle.toPlainText()
-        sub_title = self.dlg.txtsubTitle.toPlainText()
+        title_text = self.dlg.txtmainTitle.text()
+        sub_title = self.dlg.txtsubTitle.text()
         template_file_name = self.dlg.cmbTemplate.currentText()
         num_carte = self.dlg.iNumCarte.value()
 

@@ -59,7 +59,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Sous- titre</string>
+    <string>Sous-titre</string>
    </property>
   </widget>
   <widget class="QWidget" name="layoutWidget">

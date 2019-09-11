@@ -25,21 +25,20 @@
 import os.path
 import json
 
+from distutils.dir_util import copy_tree
+
 from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt5.QtGui import QIcon, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QAction
 from PyQt5.QtXml import QDomDocument
-
-from distutils.dir_util import copy_tree
 
 from qgis.core import (
     QgsApplication,
     QgsProject,
     QgsPrintLayout,
     QgsReadWriteContext,
-    QgsLayoutItemMap, QgsLayoutItemLabel, QgsLayoutItemLegend, QgsLayerTree
+    QgsLayoutItemMap, QgsLayoutItemLabel, QgsLayoutItemLegend
 )
-from qgis.gui import QgsMessageBar
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -114,13 +113,18 @@ class templateLoader:
         copy_tree(source_profile, profile_home, update=1)
 
     def load_preferences(self):
+        """
+            Load preference file who are contain in resources dir
+        """
         path = os.path.join(self.plugin_dir, "resources", "preferences.json")
         with open(path, 'r') as json_prefs:
             prefs = json.load(json_prefs)
         return prefs
 
     def layout_loader(self):
-        """ Generate the layout """
+        """
+            Generate the layout with form parameters
+        """
 
         layout_name = 'Custom Map'
 
@@ -152,8 +156,13 @@ class templateLoader:
         layout.initializeDefaults()
 
         # Load template file and load it into the layout (l)
+        tpl_path = os.path.join(
+            QgsApplication.qgisSettingsDirPath(),
+            "composer_templates",
+            template_file_name + ".qpt"
+        )
         template_file = open(
-            os.path.join(QgsApplication.qgisSettingsDirPath(), "composer_templates", template_file_name + ".qpt"),
+            tpl_path,
             'r+',
             encoding='utf-8'
         )
@@ -166,7 +175,7 @@ class templateLoader:
         # Give the layout a name (must be unique)
         layout.setName(layout_name)
 
-        ## Extent of current canvas
+        # Extent of current canvas
         if isinstance(layout.itemById('main-map'), QgsLayoutItemMap):
             my_map = layout.itemById('main-map')
             # canvas = self.iface.mapCanvas()
@@ -175,21 +184,32 @@ class templateLoader:
             # Scale
             my_map.setScale(int(scale))
 
-
-        ## Change title QgsLayoutItemLabel
-        if isinstance(layout.itemById('main-title'), QgsLayoutItemLabel):
+        # Change title QgsLayoutItemLabel
+        if isinstance(
+            layout.itemById('main-title'),
+            QgsLayoutItemLabel
+        ):
             item = layout.itemById('main-title')
             item.setText(title_text)
 
-        if isinstance(layout.itemById('sub-title'), QgsLayoutItemLabel):
+        if isinstance(
+            layout.itemById('sub-title'),
+            QgsLayoutItemLabel
+        ):
             item = layout.itemById('sub-title')
             item.setText(sub_title)
 
-        if isinstance(layout.itemById('num-map'), QgsLayoutItemLabel):
+        if isinstance(
+            layout.itemById('num-map'),
+            QgsLayoutItemLabel
+        ):
             item = layout.itemById('num-map')
             item.setText(item.text().replace('{{num}}', str(num_carte)))
 
-        if isinstance(layout.itemById('sources-copyright'), QgsLayoutItemLabel):
+        if isinstance(
+            layout.itemById('sources-copyright'),
+            QgsLayoutItemLabel
+        ):
             item = layout.itemById('sources-copyright')
             item.setText(
                 item.text().replace(
@@ -198,21 +218,33 @@ class templateLoader:
             )
 
         ## Legend
-        if isinstance(layout.itemById('main-map-legend'), QgsLayoutItemLegend):
+        if isinstance(
+            layout.itemById('main-map-legend'
+        ),
+            QgsLayoutItemLegend):
             legend = layout.itemById('main-map-legend')
             legend.setTitle("Légende")
-            ## Add only active layers
-            # Checks layer tree objects and stores them in a list. This includes csv tables
+
+            # Add only active layers
+            # Checks layer tree objects and stores them in a list.
+            #    This includes csv tables
             checked_layers = [
                 layer.name() for layer in project.layerTreeRoot().children()
                 if layer.isVisible()
             ]
-            # get map layer objects of checked layers by matching their names and store those in a list
+            # get map layer objects of checked layers
+            #   by matching their names and store those in a list
             layers_to_remove = [
-                layer for layer in project.mapLayers().values() if layer.name() not in checked_layers
+                layer for layer in project.mapLayers().values()
+                if layer.name() not in checked_layers
             ]
-            legend.setAutoUpdateModel(False) #this line is important!! without it the unchecked layers
-            #will be removed not only from the layout legend, but also from the table of contents panel and your project!!
+
+            # this line is important!!
+            # without it the unchecked layers
+            # will be removed not only from the layout legend,
+            # but also from the table of contents panel and your project!!
+            legend.setAutoUpdateModel(False)
+
             model = legend.model()
             root = model.rootGroup()
             for l in layers_to_remove:
@@ -222,7 +254,8 @@ class templateLoader:
                 model.setRootGroup(root)
             except:
                 self.iface.messageBar().pushMessage(
-                "Error", "Ooops. Something went wrong. Trying to open the generated layout"
+                    "Error",
+                    "Ooops. Something went wrong. Trying to set the legend"
                 )
 
         # # Add layout to layout manager
@@ -231,10 +264,11 @@ class templateLoader:
 
         # Open and show the layout in designer
         try:
-           self.iface.openLayoutDesigner(layout)
-        except Exception as e:
+            self.iface.openLayoutDesigner(layout)
+        except Exception:
             self.iface.messageBar().pushMessage(
-               "Error", "Ooops. Something went wrong. Trying to open the generated layout"
+               "Error",
+               "Ooops. Something went wrong. Trying to open the generated layout"
             )
 
     def add_action(
@@ -247,7 +281,8 @@ class templateLoader:
         add_to_toolbar=True,
         status_tip=None,
         whats_this=None,
-        parent=None):
+        parent=None
+    ):
         """Add a toolbar icon to the toolbar.
 
         :param icon_path: Path to the icon for this action. Can be a resource
@@ -312,7 +347,10 @@ class templateLoader:
         return action
 
     def initGui(self):
-        """Create the menu entries and toolbar icons inside the QGIS GUI."""
+        """
+            Create the menu entries and toolbar
+                icons inside the QGIS GUI.
+        """
 
         icon_path = ':/plugins/templateLoader/icon.png'
         self.add_action(
@@ -323,7 +361,6 @@ class templateLoader:
 
         # will be set False in run()
         self.first_start = True
-
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
@@ -345,11 +382,15 @@ class templateLoader:
         if os.path.isdir(templates_dir) == False:
             os.mkdir(templates_dir)
 
-        # Search the templates folder and add files to templates list and sort it
-        templates = [f.name for f in os.scandir(templates_dir) if f.is_file()]
+        # Search the templates folder
+        #   and add files to templates list and sort it
+        templates = [
+            f.name for f in os.scandir(templates_dir) if f.is_file()
+        ]
         templates.sort()
 
-        # Add all the templates from the list to the listWidget (only add files with *.qpt extension)
+        # Add all the templates from the list to the listWidget
+        #   (only add files with *.qpt extension)
         tpls = []
         for template in templates:
             filename, extension = os.path.splitext(template)
@@ -377,7 +418,7 @@ class templateLoader:
             model.appendRow(item)
         self.dlg.listViewCopyright.setModel(model)
 
-        ## Fill the combobox with available scales.
+        # Fill the combobox with available scales.
         self.dlg.cmbScale.addItem(
             "1 : " + str(int(self.iface.mapCanvas().scale())),
             int(self.iface.mapCanvas().scale())
@@ -397,14 +438,16 @@ class templateLoader:
     def run(self):
         """Run method that performs all the real work"""
 
-        # Create the dialog with elements (after translation) and keep reference
-        # Only create GUI ONCE in callback, so that it will only load when the plugin is started
+        # Create the dialog with elements (after translation)
+        #       and keep reference
+        # Only create GUI ONCE in callback,
+        #       so that it will only load when the plugin is started
         if self.first_start is True:
             self.first_start = False
             self.dlg = templateLoaderDialog()
             self.initFormGui()
 
-        ## Fill the combobox with the current scale
+        # Fill the combobox with the current scale
         self.dlg.cmbScale.removeItem(0)
         self.dlg.cmbScale.insertItem(
             0,

@@ -8,62 +8,18 @@ Extension python permettant de générer un composer de carte à partir de templ
 
 Versions Qgis
 -------------------
-Plugin testé avec Qgis 2.6, 2.8, 2.14
+Plugin testé avec Qgis 3.4
 
-Configuration
--------------------
 
-Les paramètres du plugins sont contenus dans le fichier preferences.xml (répertoire resources).
-Ils permettent de spécifier : 
- - La liste des échelles possibles pour la carte
 
-  ````XML
-  <scales>
-    <scale>2000</scale>
-      ..
-    <scale>300000</scale>
-    <scale>500000</scale>
-    <scale>1000000</scale>
-  </scales>
-  ````
- - La liste des templates accessibles à l'utilisateur.
+Fonctionnement du plugin
+-------------------------
+Le plugin récupère les templates contenus dans le dossier `composer_templates` du profil de l'utilisateur. Puis se base sur les identifiant des blocks des templates pour remplir les informations contenues dans le formulaire.
 
-  ````XML
-  <templates>
-    <template id="nom_du_fichier.qpt">Nom à afficher</template>
-    ....
-  </templates>
-  ````
- - La liste des checkboxs permettant d'ajouter des copyrights prédéfinis
 
-  ````XML
-  <copyrights>
-    <copyright>© IGN SCAN25 2012</copyright>
-      ...
-  </copyrights> 
-  ````
- - Un texte s'affichant par défaut dans la source (en plus du nom du projet et de la date de création de la carte)
-
-  ````XML
-  <editions>
-    <edition>I love Maps</edition>    
-  </editions>
-  ````
- - Le nom du fichier logo à afficher
-
-  ````XML
-  <logos>
-    <logo>logo_pnc_orange.tif</logo>
-  </logos>
-  ````
- - Un paramètre permettant de spécifier si la légende des fichiers raster doit ou non figurer sur la carte
-
-  ````XML
-  <params>
-    <hide_raster>true</hide_raster>
-  </params>
-  ````
- 
+Un ensemble de templates et icone sont initialement présentes dans le répertoire profile. Ce répertoire est copié lors de l'installation du plugin dans le profil de l'utilisateur dans les répertoires standards de Qgis:
+* composer_templates
+* svg
 
 
 Création de template
@@ -77,4 +33,43 @@ Pour que le plugin fonctionne correctement les templates doivent respecter des c
  - Sous-titre = sub-title
  - Source = sources-copyright
  - Numéro de la carte = num-map
+
+Une fois un template créé, il faut l'enregistrer dans le dossier `composer_templates` du profil de l'utilisateur.
+Pour rajouter des icones, il est également conseillé de les placer dans le répertoire `svg` du profil de l'utilisateur
+
+Configuration
+-------------------
+Les paramètres du plugins sont contenus dans le fichier preferences.json (répertoire resources).
+Ils permettent de spécifier : 
+ - La liste des échelles possibles pour la carte
+
+  ````json
+ "scales": [
+            100,
+            250,
+            500,
+            1000,
+            2000,
+            5000,
+            10000,
+            25000,
+            50000,
+            100000,
+            200000,
+            300000,
+            500000,
+            1000000
+    ],
+  ````
+ - La liste des checkboxs permettant d'ajouter des copyrights prédéfinis
+
+  ````json
+  "copyrights": [
+        "IGN SCAN25®",
+        "IGN BD ORTHO®",
+        "IGN BD ORTHO®",
+        "© OpenStreetMap contributors"
+    ]
+  
+  ````
 
